@@ -50,26 +50,28 @@
 
 #elif defined(HAL_BOARD_CHDTECH_DEV)
 #define DO_DEBUG_UART
+#define DO_UART_1
 //#define DO_DEBUG_MT
 
 #endif
 
-
-//i2c bh1750
-#define OCM_CLK_PORT 0
-#define OCM_DATA_PORT 0
-#define OCM_CLK_PIN 5
-#define OCM_DATA_PIN 6
-
-#define HAL_I2C_RETRY_CNT 1
-
-
-#ifdef DO_DEBUG_UART
+#if defined(DO_DEBUG_UART) || defined(DO_UART_1)
 #define HAL_UART TRUE
-#define HAL_UART_DMA 1
-#define HAL_UART_ISR 2
 #define INT_HEAP_LEN (2685 - 0x4B - 0xBB)
 #endif
+#ifdef DO_DEBUG_UART
+#define HAL_UART_DMA 1  // uart0
+#endif
+#ifdef DO_UART_1
+#define HAL_UART_ISR 2 // uart1
+#endif
+
+//#ifdef DO_DEBUG_UART
+//#define HAL_UART TRUE
+//#define HAL_UART_DMA 1
+//#define HAL_UART_ISR 2
+//#define INT_HEAP_LEN (2685 - 0x4B - 0xBB)
+//#endif
 
 #ifdef DO_DEBUG_MT
 #define HAL_UART TRUE

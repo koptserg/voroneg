@@ -110,9 +110,9 @@ static zclGeneral_AppCallbacks_t zclApp_CmdCallbacks = {
 
 void zclApp_Init(byte task_id) {
     zclApp_RestoreAttributesFromNV();
-    
+#ifdef DO_UART_1    
     zclApp_InitUart1(zclApp_Uart1RxCb);
-          
+#endif          
     // this is important to allow connects throught routers
     // to make this work, coordinator should be compiled with this flag #define TP2_LEGACY_ZC
     requestNewTrustCenterLinkKey = FALSE;
@@ -240,27 +240,6 @@ static void zclApp_ReadSensors(void) {
     case 0:
 //        HalLedSet(HAL_LED_1, HAL_LED_MODE_BLINK);    
       zclBattery_Report();      
-        break;
-    case 1: 
-//      HalUARTRead(HAL_UART_PORT_0, (uint8 *)&response, sizeof(response) / sizeof(response[0]));
-//      while(response[i] != 13 && i < 10) {
-//        LREP("[%d]= %d\r\n", i, response[i]);
-//        zclApp_StateText[0] = i+1;
-//        zclApp_StateText[i+1] = response[i];
-//        i++;
-//      }   
-        break;
-    case 2:
-//      for (uint8 i = 0; i <= zclApp_StateText[0]; i++) {
-//        LREP("[%d]= %d\r\n", i, zclApp_StateText[i]);
-//      }
-//      bdb_RepChangedAttrValue(zclApp_FirstEP.EndPoint, MS_VALUE_BASIC, ATTRID_IOV_BASIC_PRESENT_VALUE);
-      
-//      HalUARTWrite(HAL_UART_PORT_1, "UART1 output test\r\n", (byte)osal_strlen("UART1 output test\r\n"));
-//      for (uint8 i = 1; i <= zclApp_StateText[0]; i++) {
-//        LREP("[%d]= %d\r\n", i, zclApp_StateText[i]);
-//        HalUARTWrite(HAL_UART_PORT_1, &zclApp_StateText[i], 1);
-//      }
         break;
     default:
         osal_stop_timerEx(zclApp_TaskID, APP_READ_SENSORS_EVT);
