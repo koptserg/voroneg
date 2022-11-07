@@ -36,6 +36,27 @@ const postfixWithEndpointName = (name, msg, definition) => {
 };
 
 const fz = {
+    set_date: {
+        cluster: 'genPowerCfg',
+        type: ['attributeReport', 'readResponse'],
+        convert: (model, msg, publish, options, meta) => {
+          return {set_date: msg.data.batteryManufacturer};
+        },
+    },
+    st_text: {
+        cluster: 'genMultistateValue',
+        type: ['attributeReport', 'readResponse'],
+        convert: (model, msg, publish, options, meta) => {
+            const result = {};
+            if (msg.data.hasOwnProperty('presentValue')) {
+             result.action = msg.data.presentValue;
+            }
+            if (msg.data.hasOwnProperty('stateText')) {
+              result.stateText = msg.data.stateText;
+            }
+            return result;
+        },
+    },
     battery_config: {
         cluster: 'genPowerCfg',
         type: ['attributeReport', 'readResponse'],
@@ -50,8 +71,46 @@ const fz = {
 };
 
 const tz = {
+    set_date: {
+        // set delay after motion detector changes from occupied to unoccupied
+        key: ['set_date'],
+        convertSet: async (entity, key, value, meta) => {
+            const firstEndpoint = meta.device.getEndpoint(1);
+            await firstEndpoint.write('genPowerCfg', {batteryManufacturer: value});
+            return {state: {set_date: value}};
+        },
+        convertGet: async (entity, key, meta) => {
+            const firstEndpoint = meta.device.getEndpoint(1);
+            await firstEndpoint.read('genPowerCfg', ['batteryManufacturer']);
+        },
+    },
+    action: {
+        key: ['action'],
+        convertSet: async (entity, key, value, meta) => {
+            const firstEndpoint = meta.device.getEndpoint(1);
+            await firstEndpoint.write('genMultistateValue', {presentValue: value});
+            return {state: {action: value}};
+        },
+        convertGet: async (entity, key, meta) => {
+            const firstEndpoint = meta.device.getEndpoint(1);
+            await firstEndpoint.read('genMultistateValue', ['presentValue']);
+        },
+    },
+    st_text: {
+        key: ['stateText'],
+        convertSet: async (entity, key, value, meta) => {
+            const firstEndpoint = meta.device.getEndpoint(1);
+//            await firstEndpoint.write('genMultistateValue', {description: value});
+            const payload = {14: {value, type: 0x42}};
+            await firstEndpoint.write('genMultistateValue', payload);
+            return {state: {stateText: value}};
+        },
+        convertGet: async (entity, key, meta) => {
+            const firstEndpoint = meta.device.getEndpoint(1);
+            await firstEndpoint.read('genMultistateValue', ['stateText']);
+        },
+    },
     change_period: {
-        // set minAbsoluteChange
         key: ['battery_period'],
         convertSet: async (entity, key, value, meta) => {
             value *= 1;
@@ -81,10 +140,17 @@ const device = {
         supports: 'battery',
         fromZigbee: [
             fz.battery_config,
+//            fz.set_date,
+            fz.st_text,
+//            fromZigbeeConverters.ptvo_switch_uart,
             fromZigbeeConverters.battery,
         ],
         toZigbee: [
             tz.change_period,
+//            tz.set_date,
+            tz.action,
+            tz.st_text,
+//            toZigbeeConverters.ptvo_switch_uart,
             toZigbeeConverters.factory_reset,
         ],
         meta: {
@@ -95,6 +161,7 @@ const device = {
             const firstEndpoint = device.getEndpoint(1);
             await bind(firstEndpoint, coordinatorEndpoint, [
                 'genPowerCfg',
+                'genMultistateValue',
             ]);
 
         const genPowerCfgPayload = [{
@@ -110,12 +177,23 @@ const device = {
                 reportableChange: 0,
             }
         ];
+        const msBindPayload = [{
+            attribute: 'presentValue',
+            minimumReportInterval: 0,
+            maximumReportInterval: 3600,
+            reportableChange: 0,
+        }
+        ];
 
-            await firstEndpoint.configureReporting('genPowerCfg', genPowerCfgPayload);
+//            await firstEndpoint.configureReporting('genPowerCfg', genPowerCfgPayload);
+//            await firstEndpoint.configureReporting('genMultistateValue', msBindPayload);
 
         },
         exposes: [
             exposes.numeric('battery', ACCESS_STATE).withUnit('%').withDescription('Remaining battery in %').withValueMin(0).withValueMax(100),
+//            exposes.text('set_date', ACCESS_STATE | ACCESS_WRITE | ACCESS_READ).withDescription('Set date (format )'),
+            exposes.text('action', ACCESS_STATE | ACCESS_WRITE | ACCESS_READ).withDescription('button clicks or data from/to UART'),
+            exposes.text('stateText', ACCESS_STATE | ACCESS_WRITE | ACCESS_READ).withDescription('button clicks or data from/to UART'),
             exposes.numeric('battery_period', ACCESS_STATE | ACCESS_WRITE | ACCESS_READ).withUnit('min').withDescription('Battery report period (default = 30 min)'),
         ],
 };
