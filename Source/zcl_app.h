@@ -52,8 +52,6 @@ extern "C" {
 #define ZCL_CHAR_STR  ZCL_DATATYPE_CHAR_STR
 #define ZCL_ARRAY     ZCL_DATATYPE_ARRAY
 
-#define ATTRID_POWER_CFG_BATTERY_PERIOD 0xF003
-
 
 /*********************************************************************
  * TYPEDEFS
@@ -68,7 +66,6 @@ extern SimpleDescriptionFormat_t zclApp_FirstEP;
 //extern uint8 zclApp_BatteryVoltage;
 //extern uint8 zclApp_BatteryPercentageRemainig; 
 extern uint8 zclApp_StateText[];
-extern uint16 zclApp_presentValue;
 
 typedef struct
 {

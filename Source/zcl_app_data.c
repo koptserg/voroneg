@@ -39,7 +39,6 @@ const uint16 zclApp_clusterRevision_all = 0x0001;
 
 //uint8 zclApp_StateText[] = {7, '0', '1', '2', '3', '4', '5', '6'};
 uint8 zclApp_StateText[128];
-uint16 zclApp_presentValue = 0;
 
 #define DEFAULT_CfgBatteryPeriod 30 // min
 
@@ -79,11 +78,8 @@ CONST zclAttrRec_t zclApp_AttrsFirstEP[] = {
  * FYI: calculating battery percentage can be tricky, since this device can be powered from 2xAA or 1xCR2032 batteries
  * */
     {POWER_CFG, {ATTRID_POWER_CFG_BATTERY_PERCENTAGE_REMAINING, ZCL_UINT8, RR, (void *)&zclBattery_PercentageRemainig}},
-    {POWER_CFG, {ATTRID_POWER_CFG_BATTERY_PERIOD, ZCL_UINT16, RRW, (void *)&zclApp_Config.CfgBatteryPeriod}},
-//    {POWER_CFG, {ATTRID_POWER_CFG_BAT_MANU, ZCL_CHAR_STR, RW, (void *)&zclApp_StateText}}
 
-    {MS_VALUE_BASIC, {ATTRID_IOV_BASIC_STATE_TEXT, ZCL_CHAR_STR, RW, (void *)&zclApp_StateText}},
-    {MS_VALUE_BASIC, {ATTRID_IOV_BASIC_PRESENT_VALUE, ZCL_UINT16, RRW, (void *)&zclApp_presentValue}}
+    {MS_VALUE_BASIC, {ATTRID_IOV_BASIC_STATE_TEXT, ZCL_CHAR_STR, RW, (void *)&zclApp_StateText}}
 };
 
 uint8 CONST zclApp_AttrsFirstEPCount = (sizeof(zclApp_AttrsFirstEP) / sizeof(zclApp_AttrsFirstEP[0]));

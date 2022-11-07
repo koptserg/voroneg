@@ -336,7 +336,7 @@ static void zclApp_RestoreAttributesFromNV(void) {
 }
 
 static void zclApp_StateTextReport(void) {
-    const uint8 NUM_ATTRIBUTES = 2;
+    const uint8 NUM_ATTRIBUTES = 1;
     zclReportCmd_t *pReportCmd;
     pReportCmd = osal_mem_alloc(sizeof(zclReportCmd_t) + (NUM_ATTRIBUTES * sizeof(zclReport_t)));
     if (pReportCmd != NULL) {
@@ -345,10 +345,6 @@ static void zclApp_StateTextReport(void) {
         pReportCmd->attrList[0].attrID = ATTRID_IOV_BASIC_STATE_TEXT;
         pReportCmd->attrList[0].dataType = ZCL_CHAR_STR;
         pReportCmd->attrList[0].attrData = (void *)(&zclApp_StateText);
-
-        pReportCmd->attrList[1].attrID = ATTRID_IOV_BASIC_PRESENT_VALUE;
-        pReportCmd->attrList[1].dataType = ZCL_UINT16;
-        pReportCmd->attrList[1].attrData = (void *)(&zclApp_presentValue);
 
         afAddrType_t inderect_DstAddr = {.addrMode = (afAddrMode_t)AddrNotPresent, .endPoint = 0, .addr.shortAddr = 0};
         zcl_SendReportCmd(1, &inderect_DstAddr, MS_VALUE_BASIC, pReportCmd, ZCL_FRAME_CLIENT_SERVER_DIR, TRUE, bdb_getZCLFrameCounter());
