@@ -210,7 +210,9 @@ static void zclApp_HandleKeys(byte portAndAction, byte keyCode) {
     uint8 endPoint = 0;
     if (portAndAction & HAL_KEY_PORT0) {
         LREPMaster("Key press PORT0\r\n");
-        
+#ifdef POWER_SAVING         
+        osal_pwrmgr_task_state(zclApp_TaskID, PWRMGR_HOLD);
+#endif        
     } else if (portAndAction & HAL_KEY_PORT1) {     
         LREPMaster("Key press PORT1\r\n");
 
@@ -288,6 +290,9 @@ static void zclApp_Uart1RxCb(uint8 port, uint8 event)
     LREP("%d %d\r\n", zclApp_StateText[0] - l + 1, ch);
   }
   zclApp_StateTextReport();
+#ifdef POWER_SAVING  
+  osal_pwrmgr_task_state(zclApp_TaskID, PWRMGR_CONSERVE);
+#endif
 }
 
 static void zclApp_Report(void) { osal_start_reload_timer(zclApp_TaskID, APP_READ_SENSORS_EVT, 100); }
