@@ -8,11 +8,11 @@
             <name>ALL</name>
             <member>
                 <project>GenericApp</project>
-                <configuration>DIYRuZ_Flower_555</configuration>
+                <configuration>VORONEG_CHDTECH</configuration>
             </member>
             <member>
                 <project>GenericApp</project>
-                <configuration>DIYRuZ_Flower_PWM</configuration>
+                <configuration>VORONEG_CHDTECH_PM2</configuration>
             </member>
         </batchDefinition>
     </batchBuild>
