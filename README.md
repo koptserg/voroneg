@@ -1,4 +1,4 @@
-# voroneg
+# Voroneg
 1. uart0 debugger (p0.2, p0.3)
 2. uart1 exchange (p1.6, p1.7)
 3. p1.7 and p0.1 connect for sleep mode
