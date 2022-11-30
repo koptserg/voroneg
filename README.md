@@ -6,12 +6,12 @@
 5. PWM LED (p0.3, GND)
 # How to join:
 ### If device in FN(factory new) state:
-1. Press and hold button (1) for 2-3 seconds, until device start flashing led
-2. Wait, in case of successfull join, device will flash led 5 times
-3. If join failed, device will flash led 3 times
+1. Press and hold button(S2) for 2-3 seconds, until device start flashing led(D1)
+2. Wait, in case of successfull join, device will flash led(D1) 5 times
+3. If join failed, device will flash led(D1) 3 times
 
 ### If device in a network:
-1. Hold button (1) for 10 seconds, this will reset device to FN(factory new) status
+1. Hold button(S2) for 10 seconds, this will reset device to FN(factory new) status
 2. Go to step 1 for FN device
 
 # Hardware
