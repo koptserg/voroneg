@@ -1,7 +1,9 @@
 # Voroneg
 1. uart0 debugger (p0.2, p0.3)
 2. uart1 exchange (p1.6, p1.7)
-3. p1.7 and p0.1 connect for sleep mode
+3. p1.7 and p0.1 connect for sleep mode(PM2)
+4. WDT
+5. PWM LED (p0.3, GND)
 # How to join:
 ### If device in FN(factory new) state:
 1. Press and hold button (1) for 2-3 seconds, until device start flashing led
