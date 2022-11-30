@@ -9,7 +9,9 @@
 #include "hal_key.h"
 
 static void zclFactoryResetter_ResetToFN(void);
+#if FACTORY_RESET_BY_BOOT_COUNTER
 static void zclFactoryResetter_ProcessBootCounter(void);
+#endif
 static void zclFactoryResetter_ResetBootCounter(void);
 
 static uint8 zclFactoryResetter_TaskID;
@@ -74,6 +76,7 @@ void zclFactoryResetter_HandleKeys(uint8 portAndAction, uint8 keyCode) {
 #endif
 }
 
+#if FACTORY_RESET_BY_BOOT_COUNTER
 void zclFactoryResetter_ProcessBootCounter(void) {
     LREPMaster("zclFactoryResetter_ProcessBootCounter\r\n");
     osal_start_timerEx(zclFactoryResetter_TaskID, FACTORY_BOOTCOUNTER_RESET_EVT, FACTORY_RESET_BOOTCOUNTER_RESET_TIME);
@@ -92,3 +95,4 @@ void zclFactoryResetter_ProcessBootCounter(void) {
     }
     osal_nv_write(ZCD_NV_BOOTCOUNTER, 0, sizeof(bootCnt), &bootCnt);
 }
+#endif

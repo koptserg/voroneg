@@ -32,6 +32,9 @@ void zclCommissioning_Init(uint8 task_id) {
     // to make this work, coordinator should be compiled with this flag #define TP2_LEGACY_ZC
     requestNewTrustCenterLinkKey = FALSE;
     bdb_StartCommissioning(BDB_COMMISSIONING_MODE_NWK_STEERING | BDB_COMMISSIONING_MODE_FINDING_BINDING);
+#ifdef WDT_IN_PM1    
+    osal_start_reload_timer( zclCommissioning_TaskId, APP_COMMISSIONING_CLEAR_WDT_EVT, 990);
+#endif
 }
 
 static void zclCommissioning_ResetBackoffRetry(void) {
@@ -167,7 +170,14 @@ uint16 zclCommissioning_event_loop(uint8 task_id, uint16 events) {
         zclCommissioning_Sleep(true);
         return (events ^ APP_COMMISSIONING_CLOCK_DOWN_POLING_RATE_EVT);
     }
-
+#ifdef WDT_IN_PM1    
+    if (events & APP_COMMISSIONING_CLEAR_WDT_EVT) {
+        LREPMaster("APP_COMMISSIONING_CLEAR_WDT_EVT\r\n");
+        WDCTL = 0xA0;
+        WDCTL = 0x50;
+        return (events ^ APP_COMMISSIONING_CLEAR_WDT_EVT);
+    }
+#endif
     // Discard unknown events
     return 0;
 }
