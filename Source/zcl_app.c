@@ -94,6 +94,13 @@ static void zclApp_InitUart1(halUARTCBack_t pf);
 static void zclApp_Uart1RxCb(uint8 port, uint8 event);
 static void zclApp_WriteUart1(void);
 
+void DelayMs(unsigned int delaytime);
+
+#ifdef PWM_LED_PORT0
+static void InitLedPWM(uint8 level);
+uint8 zclApp_st = 1;
+bool zclApp_st_dnup = 1;
+#endif
 /*********************************************************************
  * ZCL General Profile Callback table
  */
@@ -174,7 +181,25 @@ uint16 zclApp_event_loop(uint8 task_id, uint16 events) {
 
         return (events ^ APP_REPORT_BATTERY_EVT);
     }
-    
+#ifdef PWM_LED_PORT0    
+    if (events & APP_LED_PWM_EVT) {
+        LREPMaster("APP_LED_PWM_EVT\r\n");
+        if (zclApp_st < 200 && zclApp_st_dnup){
+          InitLedPWM(zclApp_st);
+          zclApp_st++;
+        } else {
+          zclApp_st_dnup = 0;
+        }
+        if (zclApp_st !=1 && !zclApp_st_dnup){
+          InitLedPWM(zclApp_st);
+          zclApp_st--;
+        } else {
+          zclApp_st_dnup = 1;
+        }
+
+        return (events ^ APP_LED_PWM_EVT);
+    }
+#endif    
     if (events & APP_REPORT_EVT) {
         LREPMaster("APP_REPORT_EVT\r\n");
         zclApp_Report();
@@ -212,7 +237,8 @@ static void zclApp_HandleKeys(byte portAndAction, byte keyCode) {
         LREPMaster("Key press PORT0\r\n");
 #ifdef POWER_SAVING         
         osal_pwrmgr_task_state(zclApp_TaskID, PWRMGR_HOLD);
-#endif        
+#endif 
+//        DelayMs(300); //test WDT
     } else if (portAndAction & HAL_KEY_PORT1) {     
         LREPMaster("Key press PORT1\r\n");
 
@@ -325,6 +351,9 @@ static void zclApp_StopReloadTimer(void) {
 
 static void zclApp_StartReloadTimer(void) {
     osal_start_reload_timer(zclApp_TaskID, APP_REPORT_BATTERY_EVT, (uint32)zclApp_Config.CfgBatteryPeriod * 60000);
+#ifdef PWM_LED_PORT0
+    osal_start_reload_timer(zclApp_TaskID, APP_LED_PWM_EVT, 15);
+#endif
 }
 
 static void zclApp_RestoreAttributesFromNV(void) {
@@ -357,5 +386,36 @@ static void zclApp_StateTextReport(void) {
     osal_mem_free(pReportCmd);
 }
 
+#ifdef PWM_LED_PORT0
+static void InitLedPWM(uint8 level){
+//  P0DIR |= 0x08; // p0.3 output
+  PERCFG &= ~0x40; //select of alternative 1 for timer 1
+  P2DIR = (P2DIR & ~0xC0) | 0x80; // priority timer 1 channels 0–1
+  P0SEL |= 0x08; // p0.3 periferal
+  
+  T1CC1H = 0x00;
+  T1CC1L = level; //PWM Duty Cycle 
+  
+  T1CC0H = 0x00;
+  T1CC0L = 0xff; //PWM signal period
+  
+  T1CCTL1 = 0x1c; //00: No capture
+                  //1: Compare mode
+                  //011: Set output on compare-up, clear on compare-down in up-and-down mode. Otherwise set output on compare, clear on 0.
+  T1CTL = 0x02; //11: Up-and-down, repeatedly count from 0x0000 to T1CC0 and from T1CC0 down to 0x0000.
+                //00: Tick frequency / 1
+}
+#endif
+
+void DelayMs(unsigned int delaytime) {
+  while(delaytime--)
+  {
+    uint16 microSecs = 1000;
+    while(microSecs--)
+    {
+      asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop");
+    }
+  }
+}
 /****************************************************************************
 ****************************************************************************/

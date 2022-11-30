@@ -42,18 +42,16 @@
 
 #define BDB_MAX_CLUSTERENDPOINTS_REPORTING 10
 
-//#define SMART
-
-#if defined(HAL_BOARD_MOTION)
-#define POWER_SAVING
-//#define DO_DEBUG_UART
-
-#elif defined(HAL_BOARD_CHDTECH_DEV)
-//#define POWER_SAVING
+#if defined(HAL_BOARD_CHDTECH_DEV)
 //#define DO_DEBUG_UART
 #define DO_UART_1
-//#define DO_DEBUG_MT
+#endif
 
+#ifndef POWER_SAVING
+#define WDT_IN_PM1
+#ifndef DO_DEBUG_UART
+#define PWM_LED_PORT0
+#endif
 #endif
 
 #if defined(DO_DEBUG_UART) || defined(DO_UART_1)

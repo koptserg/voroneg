@@ -20,6 +20,7 @@ extern "C" {
 #define APP_REPORT_EVT                  0x0001
 #define APP_READ_SENSORS_EVT            0x0002
 #define APP_SAVE_ATTRS_EVT              0x0080
+#define APP_LED_PWM_EVT                 0x0040
 #define APP_REPORT_BATTERY_EVT          0x4000
 
 #define APP_REPORT_DELAY ((uint32) 1800000) //30 minutes
