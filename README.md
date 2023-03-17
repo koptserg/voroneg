@@ -1,4 +1,5 @@
 # Voroneg
+The UART interface is designed to send text or hex commands between an external device (e.g., Arduino) and a host. The maximum command or data block size is 127 bytes.
 1. uart0 debugger (p0.2, p0.3)
 2. uart1 exchange (p1.6, p1.7)
 3. p1.7 and p0.1 connect for sleep mode(PM2)
