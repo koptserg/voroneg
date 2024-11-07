@@ -1,8 +1,15 @@
-const {
-    fromZigbeeConverters,
-    toZigbeeConverters,
-    exposes
-} = require('zigbee-herdsman-converters');
+//const {
+//    fromZigbeeConverters,
+//    toZigbeeConverters,
+//    exposes
+//} = require('zigbee-herdsman-converters');
+
+const fz = require('zigbee-herdsman-converters/converters/fromZigbee');
+const tz = require('zigbee-herdsman-converters/converters/toZigbee');
+const exposes = require('zigbee-herdsman-converters/lib/exposes');
+const constants = require('zigbee-herdsman-converters/lib/constants');
+const reporting = require('zigbee-herdsman-converters/lib/reporting');
+const ota = require('zigbee-herdsman-converters/lib/ota');
 
 const bind = async (endpoint, target, clusters) => {
     for (const cluster of clusters) {
@@ -35,7 +42,8 @@ const postfixWithEndpointName = (name, msg, definition) => {
     }
 };
 
-const fz = {
+//const fz = {
+const fz_local = {	
     st_text: {
         cluster: 'genMultistateValue',
         type: ['attributeReport', 'readResponse'],
@@ -52,7 +60,8 @@ const fz = {
     },
 };
 
-const tz = {
+//const tz = {
+const tz_local = {
     st_text: {
         key: ['stateText'],
         convertSet: async (entity, key, value, meta) => {
@@ -75,12 +84,16 @@ const device = {
         description: '[UART](https://github.com/koptserg/voroneg)',
         supports: 'battery',
         fromZigbee: [
-            fz.st_text,
-            fromZigbeeConverters.battery,
+//            fz.st_text,
+            fz_local.st_text,
+//            fromZigbeeConverters.battery,
+            fz.battery,
         ],
         toZigbee: [
-            tz.st_text,
-            toZigbeeConverters.factory_reset,
+//            tz.st_text,
+            tz_local.st_text,
+//            toZigbeeConverters.factory_reset,
+            tz.factory_reset,
         ],
         meta: {
             configureKey: 1,
@@ -100,3 +113,4 @@ const device = {
 };
 
 module.exports = device;
+
